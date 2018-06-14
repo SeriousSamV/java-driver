@@ -65,7 +65,7 @@ public class DefaultDriverConfigLoader implements DriverConfigLoader {
 
   /**
    * Builds an instance with custom arguments, if you want to load the configuration from somewhere
-   * else or have custom options.
+   * else or have cusAwtom options.
    */
   public DefaultDriverConfigLoader(Supplier<Config> configSupplier, DriverOption[]... options) {
     this.configSupplier = configSupplier;

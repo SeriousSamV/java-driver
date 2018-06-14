@@ -15,8 +15,10 @@
  */
 package com.datastax.oss.driver.api.core.cql;
 
+import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigProfile;
+import com.datastax.oss.driver.api.core.metadata.token.Token;
 import com.datastax.oss.driver.api.core.retry.RetryPolicy;
 import com.datastax.oss.driver.api.core.session.Request;
 import com.datastax.oss.driver.api.core.session.Session;
@@ -31,6 +33,10 @@ import java.util.concurrent.CompletionStage;
  * <p>Driver clients should rarely have to deal directly with this type, it's used internally by
  * {@link Session}'s prepare methods. However a {@link RetryPolicy} implementation might use it if
  * it needs a custom behavior for prepare requests.
+ *
+ * <p>A client may also provide their own implementation of this interface to customize which
+ * attributes are propagated when preparing a simple statement; see {@link
+ * CqlSession#prepare(SimpleStatement)} for more explanations.
  */
 public interface PrepareRequest extends Request {
 
@@ -91,6 +97,32 @@ public interface PrepareRequest extends Request {
   DriverConfigProfile getConfigProfileForBoundStatements();
 
   /**
+   * The paging state to use for the bound statements that will be created from the prepared
+   * statement.
+   */
+  ByteBuffer getPagingStateForBoundStatements();
+
+  /**
+   * The routing keyspace to use for the bound statements that will be created from the prepared
+   * statement.
+   */
+  CqlIdentifier getRoutingKeyspaceForBoundStatements();
+
+  /**
+   * The routing key to use for the bound statements that will be created from the prepared
+   * statement.
+   */
+  ByteBuffer getRoutingKeyForBoundStatements();
+
+  /**
+   * The routing key to use for the bound statements that will be created from the prepared
+   * statement.
+   *
+   * <p>If it's not null, it takes precedence over {@link #getRoutingKeyForBoundStatements()}.
+   */
+  Token getRoutingTokenForBoundStatements();
+
+  /**
    * Returns the custom payload to send alongside the bound statements that will be created from the
    * prepared statement.
    */
@@ -102,4 +134,7 @@ public interface PrepareRequest extends Request {
    * <p>This follows the same semantics as {@link #isIdempotent()}.
    */
   Boolean areBoundStatementsIdempotent();
+
+  /** Whether bound statements that will be created from the prepared statement are tracing. */
+  boolean areBoundStatementsTracing();
 }

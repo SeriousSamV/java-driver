@@ -271,8 +271,13 @@ public class RequestLogFormatterTest {
         null,
         null,
         null,
+        null,
+        null,
+        null,
+        null,
         Collections.emptyMap(),
         null,
+        false,
         context.codecRegistry(),
         context.protocolVersion(),
         Collections.emptyMap());
