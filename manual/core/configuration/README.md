@@ -118,6 +118,40 @@ As shown so far, all options live under a `datastax-java-driver` prefix. This ca
 example if you need multiple driver instances in the same VM with different configurations. See the
 [Advanced topics](#changing-the-config-prefix) section.
 
+### Overriding configuration programmatically
+
+It is not uncommon for some applications to call for providing configuration programmatically.
+The driver includes [ProgrammaticDriverConfigLoader] for this very purpose:
+
+```java
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader;
+import java.time.Duration;
+
+ProgrammaticDriverConfigLoader.Builder configBuilder =
+  ProgrammaticDriverConfigLoader.builder()
+      .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(500))
+      .withProfile(
+          "profile1",
+          ProgrammaticDriverConfigLoader.profileBuilder()
+              .withString(
+                  DefaultDriverOption.REQUEST_CONSISTENCY,
+                  DefaultConsistencyLevel.EACH_QUORUM.name())
+              .build());
+
+CqlSession session =
+  CqlSession.builder()
+      .withConfigLoader(configBuilder.build())
+      .build();
+```
+
+Note that we use the [DefaultDriverOption] enum to access built-in options, but the method takes a
+more generic [DriverOption] interface. This is intended to allow custom options, see the
+[Advanced topics](#custom-options) section.
+
+Any options provided to the builder will override values defined in configuration files and do
+not change the contents of the configuration files.
 
 ### The configuration API
 
@@ -146,10 +180,6 @@ config.getProfiles().forEach((name, profile) -> ...);
 Duration requestTimeout = defaultProfile.getDuration(DefaultDriverOption.REQUEST_TIMEOUT);
 int maxRequestsPerConnection = defaultProfile.getInt(DefaultDriverOption.CONNECTION_MAX_REQUESTS);
 ```
-
-Note that we use the [DefaultDriverOption] enum to access built-in options, but the method takes a
-more generic [DriverOption] interface. This is intended to allow custom options, see the
-[Advanced topics](#custom-options) section.
 
 #### Derived profiles
 
@@ -439,6 +469,7 @@ config.getDefaultProfile().getInt(MyCustomOption.AWESOMENESS_FACTOR);
 [DriverOption]:        http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DriverOption.html
 [DefaultDriverOption]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DefaultDriverOption.html
 [DriverConfigLoader]:  http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DriverConfigLoader.html
+[ProgrammaticDriverConfigLoader]:  http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/ProgrammaticDriverConfigLoader.html
 
 [Typesafe Config]: https://github.com/typesafehub/config
 [config standard behavior]: https://github.com/typesafehub/config#standard-behavior

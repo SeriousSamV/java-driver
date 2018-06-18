@@ -26,6 +26,7 @@ import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfig;
 import com.datastax.oss.driver.api.core.config.DriverConfigProfile;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader;
+import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader.ProfileBuilder;
 import com.datastax.oss.driver.api.core.context.DriverContext;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
@@ -379,36 +380,39 @@ public class SpeculativeExecutionIT {
               NoSpeculativeExecutionPolicy.class);
     }
 
+    ProfileBuilder profile1 = ProgrammaticDriverConfigLoader.profileBuilder();
     if (profile1MaxSpeculativeExecutions != -1 || profile1SpeculativeDelayMs != -1) {
-      builder =
-          builder.withClass(
-              "profile1",
+      profile1 =
+          profile1.withClass(
               DefaultDriverOption.SPECULATIVE_EXECUTION_POLICY_CLASS,
               ConstantSpeculativeExecutionPolicy.class);
+
       if (profile1MaxSpeculativeExecutions != -1) {
-        builder =
-            builder.withInt(
-                "profile1",
-                DefaultDriverOption.SPECULATIVE_EXECUTION_MAX,
-                profile1MaxSpeculativeExecutions);
+        profile1 =
+            profile1.withInt(
+                DefaultDriverOption.SPECULATIVE_EXECUTION_MAX, profile1MaxSpeculativeExecutions);
       }
       if (profile1SpeculativeDelayMs != -1) {
-        builder =
-            builder.withDuration(
-                "profile1",
+        profile1 =
+            profile1.withDuration(
                 DefaultDriverOption.SPECULATIVE_EXECUTION_DELAY,
                 Duration.ofMillis(profile1SpeculativeDelayMs));
       }
     } else {
-      builder =
-          builder.withClass(
-              "profile1",
+      profile1 =
+          profile1.withClass(
               DefaultDriverOption.SPECULATIVE_EXECUTION_POLICY_CLASS,
               NoSpeculativeExecutionPolicy.class);
     }
 
-    // Set a non-relevant value in profile2 so it gets created.
-    builder = builder.withString("profile2", DefaultDriverOption.REQUEST_CONSISTENCY, "ONE");
+    builder = builder.withProfile("profile1", profile1.build());
+
+    builder =
+        builder.withProfile(
+            "profile2",
+            ProgrammaticDriverConfigLoader.profileBuilder()
+                .withString(DefaultDriverOption.REQUEST_CONSISTENCY, "ONE")
+                .build());
 
     CqlSession session = SessionUtils.newSession(simulacron, builder);
 

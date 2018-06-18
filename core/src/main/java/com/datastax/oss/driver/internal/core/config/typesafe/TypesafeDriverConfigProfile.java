@@ -26,7 +26,6 @@ import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
 import com.typesafe.config.ConfigValueType;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -66,21 +65,8 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile withBoolean(@NonNull DriverOption option, boolean value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
   public List<Boolean> getBooleanList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getBooleanList);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withBooleanList(
-      @NonNull DriverOption option, @NonNull List<Boolean> value) {
-    return with(option, value);
   }
 
   @Override
@@ -90,21 +76,8 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile withInt(@NonNull DriverOption option, int value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
   public List<Integer> getIntList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getIntList);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withIntList(
-      @NonNull DriverOption option, @NonNull List<Integer> value) {
-    return with(option, value);
   }
 
   @Override
@@ -114,31 +87,13 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile withLong(@NonNull DriverOption option, long value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
   public List<Long> getLongList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getLongList);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withLongList(@NonNull DriverOption option, @NonNull List<Long> value) {
-    return with(option, value);
   }
 
   @Override
   public double getDouble(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getDouble);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withDouble(@NonNull DriverOption option, double value) {
-    return with(option, value);
   }
 
   @NonNull
@@ -149,34 +104,14 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile withDoubleList(
-      @NonNull DriverOption option, @NonNull List<Double> value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
   public String getString(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getString);
   }
 
   @NonNull
   @Override
-  public DriverConfigProfile withString(@NonNull DriverOption option, @NonNull String value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
   public List<String> getStringList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getStringList);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withStringList(
-      @NonNull DriverOption option, @NonNull List<String> value) {
-    return with(option, value);
   }
 
   @NonNull
@@ -192,23 +127,6 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
     return builder.build();
   }
 
-  @NonNull
-  @Override
-  public DriverConfigProfile withStringMap(
-      @NonNull DriverOption option, @NonNull Map<String, String> map) {
-    Base base = getBaseProfile();
-    // Add the new option to any already derived options
-    Config newAdded = getAddedOptions();
-    for (String key : map.keySet()) {
-      newAdded =
-          newAdded.withValue(
-              option.getPath() + "." + key, ConfigValueFactory.fromAnyRef(map.get(key)));
-    }
-    Derived derived = new Derived(base, newAdded);
-    base.register(derived);
-    return derived;
-  }
-
   @Override
   public long getBytes(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getBytes);
@@ -216,21 +134,8 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile withBytes(@NonNull DriverOption option, long value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
-  public List<Long> getBytesList(DriverOption option) {
+  public List<Long> getBytesList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getBytesList);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withBytesList(
-      @NonNull DriverOption option, @NonNull List<Long> value) {
-    return with(option, value);
   }
 
   @NonNull
@@ -241,27 +146,8 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile withDuration(@NonNull DriverOption option, @NonNull Duration value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
   public List<Duration> getDurationList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getDurationList);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile withDurationList(
-      @NonNull DriverOption option, @NonNull List<Duration> value) {
-    return with(option, value);
-  }
-
-  @NonNull
-  @Override
-  public DriverConfigProfile without(@NonNull DriverOption option) {
-    return with(option, null);
   }
 
   @NonNull
@@ -290,11 +176,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
     return t;
   }
 
-  private DriverConfigProfile with(@NonNull DriverOption option, @Nullable Object value) {
+  @NonNull
+  @Override
+  public DriverConfigProfile with(@NonNull String path, @NonNull Object value) {
     Base base = getBaseProfile();
     // Add the new option to any already derived options
-    Config newAdded =
-        getAddedOptions().withValue(option.getPath(), ConfigValueFactory.fromAnyRef(value));
+    Config newAdded = getAddedOptions().withValue(path, ConfigValueFactory.fromAnyRef(value));
     Derived derived = new Derived(base, newAdded);
     base.register(derived);
     return derived;

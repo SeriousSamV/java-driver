@@ -15,202 +15,138 @@
  */
 package com.datastax.oss.driver.api.core.config;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
+import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableMap;
+import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableSortedSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import java.time.Duration;
-import java.util.List;
+import java.util.AbstractMap;
+import java.util.Comparator;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.SortedSet;
 
-public class ProgrammaticDriverConfigLoader {
+/**
+ * Provides a mechanism for constructing a {@link DriverConfigLoader} programmatically as an
+ * alternative, or in addition to, the default configuration mechanism which is to load
+ * configuration from configuration files using typesafe config.
+ *
+ * <p>The built {@link DriverConfigLoader} provided by {@link Builder#build()} can be passed to
+ * {@link
+ * com.datastax.oss.driver.api.core.session.SessionBuilder#withConfigLoader(DriverConfigLoader)}.
+ *
+ * <p>Configuration provided to {@link Builder}'s {@code withXXX} methods will override the values
+ * provided in the base configuration.
+ */
+public final class ProgrammaticDriverConfigLoader {
 
   private ProgrammaticDriverConfigLoader() {}
 
+  /** @return a new {@link Builder} to provide programmatic configuration. */
   public static Builder builder() {
     return new Builder();
   }
 
-  public static class Builder {
+  /**
+   * @return a new {@link ProfileBuilder} to provide programmatic configuration at a profile level.
+   * @see Builder#withProfile(String, Profile)
+   */
+  public static ProfileBuilder profileBuilder() {
+    return new ProfileBuilder();
+  }
 
-    private Config config = ConfigFactory.empty();
+  public static final class Builder implements ProgrammaticBuilder<Builder> {
 
-    private Supplier<Config> fallbackSupplier = DefaultDriverConfigLoader.DEFAULT_CONFIG_SUPPLIER;
+    private ImmutableMap.Builder<String, Object> values = ImmutableMap.builder();
 
     private Builder() {}
 
-    public Builder withBoolean(DriverOption option, boolean value) {
-      return with(option, value);
-    }
-
-    public Builder withBoolean(String profileName, DriverOption option, boolean value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withBooleanList(DriverOption option, List<Boolean> value) {
-      return with(option, value);
-    }
-
-    public Builder withBooleanList(String profileName, DriverOption option, List<Boolean> value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withInt(DriverOption option, int value) {
-      return with(option, value);
-    }
-
-    public Builder withInt(String profileName, DriverOption option, int value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withIntList(DriverOption option, List<Integer> value) {
-      return with(option, value);
-    }
-
-    public Builder withIntList(String profileName, DriverOption option, List<Integer> value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withLong(DriverOption option, long value) {
-      return with(option, value);
-    }
-
-    public Builder withLong(String profileName, DriverOption option, long value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withLongList(DriverOption option, List<Long> value) {
-      return with(option, value);
-    }
-
-    public Builder withLongList(String profileName, DriverOption option, List<Long> value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withDouble(DriverOption option, double value) {
-      return with(option, value);
-    }
-
-    public Builder withDouble(String profileName, DriverOption option, double value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withDoubleList(DriverOption option, List<Double> value) {
-      return with(option, value);
-    }
-
-    public Builder withDoubleList(String profileName, DriverOption option, List<Double> value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withString(DriverOption option, String value) {
-      return with(option, value);
-    }
-
-    public Builder withString(String profileName, DriverOption option, String value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withStringList(DriverOption option, List<String> value) {
-      return with(option, value);
-    }
-
-    public Builder withStringList(String profileName, DriverOption option, List<String> value) {
-      return with(option, value);
-    }
-
-    public Builder withStringMap(DriverOption option, Map<String, String> value) {
-      for (String key : value.keySet()) {
-        config =
-            config.withValue(
-                option.getPath() + '.' + key, ConfigValueFactory.fromAnyRef(value.get(key)));
-      }
-      return this;
-    }
-
-    public Builder withStringMap(
-        String profileName, DriverOption option, Map<String, String> value) {
-      for (String key : value.keySet()) {
-        String path = "profiles." + profileName + '.' + option.getPath() + '.' + key;
-        config = config.withValue(path, ConfigValueFactory.fromAnyRef(value.get(key)));
-      }
-      return this;
-    }
-
-    public Builder withBytes(DriverOption option, long value) {
-      return with(option, value);
-    }
-
-    public Builder withBytes(String profileName, DriverOption option, long value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withBytesList(DriverOption option, List<Long> value) {
-      return with(option, value);
-    }
-
-    public Builder withBytesList(String profileName, DriverOption option, List<Long> value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withDuration(DriverOption option, Duration value) {
-      return with(option, value);
-    }
-
-    public Builder withDuration(String profileName, DriverOption option, Duration value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withDurationList(DriverOption option, List<Duration> value) {
-      return with(option, value);
-    }
-
-    public Builder withDurationList(String profileName, DriverOption option, List<Duration> value) {
-      return with(profileName, option, value);
-    }
-
-    public Builder withClass(DriverOption option, Class<?> value) {
-      return with(option, value.getName());
-    }
-
-    public Builder withClass(String profileName, DriverOption option, Class<?> value) {
-      return with(profileName, option, value.getName());
-    }
-
-    /** Unsets an option. */
-    public Builder without(DriverOption option) {
-      return with(option, null);
-    }
-
-    public Builder without(String profileName, DriverOption option) {
-      return with(profileName, option, null);
-    }
-
-    public Builder withFallback(Supplier<Config> configSupplier) {
-      this.fallbackSupplier = configSupplier;
-      return this;
-    }
-
+    /**
+     * @return Constructs a config loader based on the configuration values provided to this builder
+     *     and falls back to the default configuration mechanism of the driver.
+     */
     public DriverConfigLoader build() {
-      return new DefaultDriverConfigLoader(() -> config.withFallback(fallbackSupplier.get()));
+      ProgrammaticDriverConfigLoader.Builder configBuilder =
+          ProgrammaticDriverConfigLoader.builder()
+              .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(500))
+              .withProfile(
+                  "profile1",
+                  ProgrammaticDriverConfigLoader.profileBuilder()
+                      .withString(
+                          DefaultDriverOption.REQUEST_CONSISTENCY,
+                          DefaultConsistencyLevel.EACH_QUORUM.name())
+                      .build());
+
+      CqlSession session = CqlSession.builder().withConfigLoader(configBuilder.build()).build();
+      // build config from map
+      Config config = ConfigFactory.empty();
+      for (Map.Entry<String, Object> entry : values.build().entrySet()) {
+        config = config.withValue(entry.getKey(), ConfigValueFactory.fromAnyRef(entry.getValue()));
+      }
+
+      // fallback on the default config supplier (config file)
+      final Config fConfig = config;
+      return new DefaultDriverConfigLoader(
+          () -> fConfig.withFallback(DefaultDriverConfigLoader.DEFAULT_CONFIG_SUPPLIER.get()));
     }
 
-    public static Builder builder() {
-      return new Builder();
+    /**
+     * @return All configured entries as a map. This is useful for cases where you want to build an
+     *     alternate {@link DriverConfigLoader} taking into the account the configuration provided
+     *     to this builder.
+     */
+    public SortedSet<Map.Entry<String, Object>> entrySet() {
+      ImmutableSortedSet.Builder<Map.Entry<String, Object>> builder =
+          ImmutableSortedSet.orderedBy(Comparator.comparing(Map.Entry::getKey));
+      for (Map.Entry<String, Object> entry : values.build().entrySet()) {
+        builder.add(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()));
+      }
+      return builder.build();
     }
 
-    private Builder with(DriverOption option, Object value) {
-      this.config = config.withValue(option.getPath(), ConfigValueFactory.fromAnyRef(value));
+    @Override
+    public Builder with(String path, Object value) {
+      values.put(path, value);
       return this;
     }
 
-    private Builder with(String profileName, DriverOption option, Object value) {
-      this.config =
-          config.withValue(
-              "profiles." + profileName + '.' + option.getPath(),
-              ConfigValueFactory.fromAnyRef(value));
+    /** Adds configuration for a profile constructed using {@link #profileBuilder()} by name. */
+    public Builder withProfile(String profileName, Profile profile) {
+      Builder builder = this;
+      String prefix = "profiles." + profileName + ".";
+      for (Map.Entry<String, Object> entry : profile.values.entrySet()) {
+        builder = builder.with(prefix + entry.getKey(), entry.getValue());
+      }
+      return builder;
+    }
+  }
+
+  public static final class ProfileBuilder implements ProgrammaticBuilder<ProfileBuilder> {
+
+    final ImmutableMap.Builder<String, Object> values = ImmutableMap.builder();
+
+    private ProfileBuilder() {}
+
+    @Override
+    public ProfileBuilder with(String path, Object value) {
+      values.put(path, value);
       return this;
+    }
+
+    public Profile build() {
+      return new Profile(values.build());
+    }
+  }
+
+  static final class Profile {
+
+    final ImmutableMap<String, Object> values;
+
+    private Profile(ImmutableMap<String, Object> values) {
+      this.values = values;
     }
   }
 }
