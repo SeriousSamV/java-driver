@@ -51,27 +51,33 @@ public class RequestLogger implements RequestTracker {
       @NonNull Node node) {
 
     boolean successEnabled =
-        configProfile.getBoolean(DefaultDriverOption.REQUEST_LOGGER_SUCCESS_ENABLED);
-    boolean slowEnabled = configProfile.getBoolean(DefaultDriverOption.REQUEST_LOGGER_SLOW_ENABLED);
+        getConfigBooleanIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_SUCCESS_ENABLED, false);
+    boolean slowEnabled =
+        getConfigBooleanIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_SLOW_ENABLED, false);
     if (!successEnabled && !slowEnabled) {
       return;
     }
 
     long slowThresholdNanos =
-        configProfile.isDefined(DefaultDriverOption.REQUEST_LOGGER_SLOW_THRESHOLD)
-            ? configProfile.getDuration(DefaultDriverOption.REQUEST_LOGGER_SLOW_THRESHOLD).toNanos()
-            : Long.MAX_VALUE;
+        getConfigDurationIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_SLOW_THRESHOLD, Long.MAX_VALUE);
     boolean isSlow = latencyNanos > slowThresholdNanos;
     if ((isSlow && !slowEnabled) || (!isSlow && !successEnabled)) {
       return;
     }
 
-    int maxQueryLength = configProfile.getInt(DefaultDriverOption.REQUEST_LOGGER_MAX_QUERY_LENGTH);
-    boolean showValues = configProfile.getBoolean(DefaultDriverOption.REQUEST_LOGGER_VALUES);
+    int maxQueryLength =
+        getConfigIntIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_MAX_QUERY_LENGTH, 500);
+    boolean showValues =
+        getConfigBooleanIfDefined(configProfile, DefaultDriverOption.REQUEST_LOGGER_VALUES, false);
     int maxValues =
-        showValues ? configProfile.getInt(DefaultDriverOption.REQUEST_LOGGER_MAX_VALUES) : 0;
+        getConfigIntIfDefined(configProfile, DefaultDriverOption.REQUEST_LOGGER_MAX_VALUES, 0);
     int maxValueLength =
-        showValues ? configProfile.getInt(DefaultDriverOption.REQUEST_LOGGER_MAX_VALUE_LENGTH) : 0;
+        getConfigIntIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_MAX_VALUE_LENGTH, 0);
 
     logSuccess(
         request, latencyNanos, isSlow, node, maxQueryLength, showValues, maxValues, maxValueLength);
@@ -85,18 +91,25 @@ public class RequestLogger implements RequestTracker {
       @NonNull DriverConfigProfile configProfile,
       Node node) {
 
-    if (!configProfile.getBoolean(DefaultDriverOption.REQUEST_LOGGER_ERROR_ENABLED)) {
+    if (!getConfigBooleanIfDefined(
+        configProfile, DefaultDriverOption.REQUEST_LOGGER_ERROR_ENABLED, false)) {
       return;
     }
 
-    int maxQueryLength = configProfile.getInt(DefaultDriverOption.REQUEST_LOGGER_MAX_QUERY_LENGTH);
-    boolean showValues = configProfile.getBoolean(DefaultDriverOption.REQUEST_LOGGER_VALUES);
+    int maxQueryLength =
+        getConfigIntIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_MAX_QUERY_LENGTH, 500);
+    boolean showValues =
+        getConfigBooleanIfDefined(configProfile, DefaultDriverOption.REQUEST_LOGGER_VALUES, false);
     int maxValues =
-        showValues ? configProfile.getInt(DefaultDriverOption.REQUEST_LOGGER_MAX_VALUES) : 0;
+        getConfigIntIfDefined(configProfile, DefaultDriverOption.REQUEST_LOGGER_MAX_VALUES, 0);
+
     int maxValueLength =
-        showValues ? configProfile.getInt(DefaultDriverOption.REQUEST_LOGGER_MAX_VALUE_LENGTH) : 0;
+        getConfigIntIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_MAX_VALUE_LENGTH, 0);
     boolean showStackTraces =
-        configProfile.getBoolean(DefaultDriverOption.REQUEST_LOGGER_STACK_TRACES);
+        getConfigBooleanIfDefined(
+            configProfile, DefaultDriverOption.REQUEST_LOGGER_STACK_TRACES, false);
 
     logError(
         request,
@@ -177,5 +190,22 @@ public class RequestLogger implements RequestTracker {
     } else {
       LOG.error("{} [{}]", builder.toString(), error.toString());
     }
+  }
+
+  private boolean getConfigBooleanIfDefined(
+      DriverConfigProfile configProfile, DefaultDriverOption option, boolean defaultValue) {
+    return configProfile.isDefined(option) ? configProfile.getBoolean(option) : defaultValue;
+  }
+
+  private long getConfigDurationIfDefined(
+      DriverConfigProfile configProfile, DefaultDriverOption option, long defaultValue) {
+    return configProfile.isDefined(option)
+        ? configProfile.getDuration(option).toNanos()
+        : defaultValue;
+  }
+
+  private int getConfigIntIfDefined(
+      DriverConfigProfile configProfile, DefaultDriverOption option, int defaultValue) {
+    return configProfile.isDefined(option) ? configProfile.getInt(option) : defaultValue;
   }
 }
