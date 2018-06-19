@@ -15,15 +15,12 @@
  */
 package com.datastax.oss.driver.api.core.config;
 
-import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableMap;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableSortedSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
-import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.Map;
@@ -69,18 +66,6 @@ public final class ProgrammaticDriverConfigLoader {
      *     and falls back to the default configuration mechanism of the driver.
      */
     public DriverConfigLoader build() {
-      ProgrammaticDriverConfigLoader.Builder configBuilder =
-          ProgrammaticDriverConfigLoader.builder()
-              .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(500))
-              .withProfile(
-                  "profile1",
-                  ProgrammaticDriverConfigLoader.profileBuilder()
-                      .withString(
-                          DefaultDriverOption.REQUEST_CONSISTENCY,
-                          DefaultConsistencyLevel.EACH_QUORUM.name())
-                      .build());
-
-      CqlSession session = CqlSession.builder().withConfigLoader(configBuilder.build()).build();
       // build config from map
       Config config = ConfigFactory.empty();
       for (Map.Entry<String, Object> entry : values.build().entrySet()) {
