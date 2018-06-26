@@ -16,11 +16,16 @@
 package com.datastax.oss.driver.api.testinfra.session;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoaderBuilder;
 import com.datastax.oss.driver.api.core.session.SessionBuilder;
 
 public class DefaultSessionBuilderInstantiator {
   public static SessionBuilder<?, ?> builder() {
     return CqlSession.builder();
+  }
+
+  public static DriverConfigLoaderBuilder configLoaderBuilder() {
+    return CqlSession.configLoaderBuilder();
   }
 
   public static String configPath() {

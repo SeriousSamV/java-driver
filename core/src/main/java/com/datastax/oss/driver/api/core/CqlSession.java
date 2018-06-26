@@ -15,6 +15,7 @@
  */
 package com.datastax.oss.driver.api.core;
 
+import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
 import com.datastax.oss.driver.api.core.cql.PrepareRequest;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
@@ -34,6 +35,18 @@ public interface CqlSession extends Session {
   @NonNull
   static CqlSessionBuilder builder() {
     return new CqlSessionBuilder();
+  }
+
+  /**
+   * Returns a builder to create a new {@link DriverConfigLoader} that uses the default config
+   * loader as a basis, but allows providing additional configuration programmatically.
+   *
+   * <p>The built config loader may then be passed to {@link
+   * com.datastax.oss.driver.api.core.session.SessionBuilder#withConfigLoader(DriverConfigLoader)}.
+   */
+  @NonNull
+  static CqlDriverConfigLoaderBuilder configLoaderBuilder() {
+    return new CqlDriverConfigLoaderBuilder();
   }
 
   /**

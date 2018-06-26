@@ -24,9 +24,9 @@ import com.datastax.oss.driver.api.core.AllNodesFailedException;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfig;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoaderBuilder;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoaderBuilder.ProfileBuilder;
 import com.datastax.oss.driver.api.core.config.DriverConfigProfile;
-import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader;
-import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader.ProfileBuilder;
 import com.datastax.oss.driver.api.core.context.DriverContext;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
@@ -330,7 +330,7 @@ public class SpeculativeExecutionIT {
   private CqlSession buildSession(int maxSpeculativeExecutions, long speculativeDelayMs) {
     return SessionUtils.newSession(
         simulacron,
-        ProgrammaticDriverConfigLoader.builder()
+        SessionUtils.configLoaderBuilder()
             .withDuration(
                 DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(SPECULATIVE_DELAY * 10))
             .withBoolean(DefaultDriverOption.REQUEST_DEFAULT_IDEMPOTENCE, true)
@@ -351,8 +351,8 @@ public class SpeculativeExecutionIT {
       int profile1MaxSpeculativeExecutions,
       long profile1SpeculativeDelayMs) {
 
-    ProgrammaticDriverConfigLoader.Builder builder =
-        ProgrammaticDriverConfigLoader.builder()
+    DriverConfigLoaderBuilder<?> builder =
+        SessionUtils.configLoaderBuilder()
             .withDuration(
                 DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(SPECULATIVE_DELAY * 10))
             .withBoolean(DefaultDriverOption.REQUEST_DEFAULT_IDEMPOTENCE, true);
@@ -380,7 +380,7 @@ public class SpeculativeExecutionIT {
               NoSpeculativeExecutionPolicy.class);
     }
 
-    ProfileBuilder profile1 = ProgrammaticDriverConfigLoader.profileBuilder();
+    ProfileBuilder profile1 = DriverConfigLoaderBuilder.profileBuilder();
     if (profile1MaxSpeculativeExecutions != -1 || profile1SpeculativeDelayMs != -1) {
       profile1 =
           profile1.withClass(
@@ -410,7 +410,7 @@ public class SpeculativeExecutionIT {
     builder =
         builder.withProfile(
             "profile2",
-            ProgrammaticDriverConfigLoader.profileBuilder()
+            DriverConfigLoaderBuilder.profileBuilder()
                 .withString(DefaultDriverOption.REQUEST_CONSISTENCY, "ONE")
                 .build());
 

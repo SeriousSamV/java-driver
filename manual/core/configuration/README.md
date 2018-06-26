@@ -121,29 +121,31 @@ example if you need multiple driver instances in the same VM with different conf
 ### Overriding configuration programmatically
 
 It is not uncommon for some applications to call for providing configuration programmatically.
-The driver includes [ProgrammaticDriverConfigLoader] for this very purpose:
+The driver includes [DriverConfigLoaderBuilder] for this very purpose, which may be used in
+the following manner:
 
 ```java
+import com.datastax.oss.driver.api.core.CqlDriverConfigLoaderBuilder;
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
-import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoaderBuilder;
 import java.time.Duration;
 
-ProgrammaticDriverConfigLoader.Builder configBuilder =
-  ProgrammaticDriverConfigLoader.builder()
-      .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(500))
-      .withProfile(
-          "profile1",
-          ProgrammaticDriverConfigLoader.profileBuilder()
-              .withString(
-                  DefaultDriverOption.REQUEST_CONSISTENCY,
-                  DefaultConsistencyLevel.EACH_QUORUM.name())
-              .build());
+CqlDriverConfigLoaderBuilder configBuilder =
+    CqlSession.configLoaderBuilder()
+        .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(500))
+        .withProfile(
+            "profile1",
+            DriverConfigLoaderBuilder.profileBuilder()
+                .withString(
+                    DefaultDriverOption.REQUEST_CONSISTENCY,
+                    DefaultConsistencyLevel.EACH_QUORUM.name())
+                .build());
 
-CqlSession session =
-  CqlSession.builder()
-      .withConfigLoader(configBuilder.build())
-      .build();
+CqlSession.builder()
+  .withConfigLoader(configBuilder.build())
+  .build();
 ```
 
 Note that we use the [DefaultDriverOption] enum to access built-in options, but the method takes a
@@ -469,7 +471,7 @@ config.getDefaultProfile().getInt(MyCustomOption.AWESOMENESS_FACTOR);
 [DriverOption]:        http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DriverOption.html
 [DefaultDriverOption]: http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DefaultDriverOption.html
 [DriverConfigLoader]:  http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DriverConfigLoader.html
-[ProgrammaticDriverConfigLoader]:  http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/ProgrammaticDriverConfigLoader.html
+[DriverConfigLoaderBuilder]:  http://docs.datastax.com/en/drivers/java/4.0/com/datastax/oss/driver/api/core/config/DriverConfigLoaderBuilder.html
 
 [Typesafe Config]: https://github.com/typesafehub/config
 [config standard behavior]: https://github.com/typesafehub/config#standard-behavior

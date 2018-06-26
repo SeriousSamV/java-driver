@@ -18,8 +18,8 @@ package com.datastax.oss.driver.api.testinfra.session;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoaderBuilder;
 import com.datastax.oss.driver.api.core.config.DriverConfigProfile;
-import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoader;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.cql.Statement;
 import com.datastax.oss.driver.api.core.metadata.Node;
@@ -28,16 +28,10 @@ import com.datastax.oss.driver.api.core.metadata.schema.SchemaChangeListener;
 import com.datastax.oss.driver.api.core.session.Session;
 import com.datastax.oss.driver.api.core.session.SessionBuilder;
 import com.datastax.oss.driver.api.testinfra.CassandraResourceRule;
-import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
 import com.datastax.oss.driver.internal.testinfra.session.TestConfigLoader;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValueFactory;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +83,20 @@ public class SessionUtils {
     }
   }
 
+  public static DriverConfigLoaderBuilder<?> configLoaderBuilder() {
+    try {
+      Class<?> clazz = Class.forName(SESSION_BUILDER_CLASS);
+      Method m = clazz.getMethod("configLoaderBuilder");
+      return (DriverConfigLoaderBuilder<?>) m.invoke(null);
+    } catch (Exception e) {
+      LOG.warn(
+          "Could not construct DriverConfigLoaderBuilder from {}, using default implementation.",
+          SESSION_BUILDER_CLASS,
+          e);
+      return CqlSession.configLoaderBuilder();
+    }
+  }
+
   public static String getConfigPath() {
     try {
       Class<?> clazz = Class.forName(SESSION_BUILDER_CLASS);
@@ -119,7 +127,7 @@ public class SessionUtils {
 
   @SuppressWarnings("TypeParameterUnusedInFormals")
   public static <SessionT extends Session> SessionT newSession(
-      CassandraResourceRule cassandraResourceRule, ProgrammaticDriverConfigLoader.Builder loader) {
+      CassandraResourceRule cassandraResourceRule, DriverConfigLoaderBuilder loader) {
     return newSession(cassandraResourceRule, null, null, null, null, loader);
   }
 
@@ -127,7 +135,7 @@ public class SessionUtils {
   public static <SessionT extends Session> SessionT newSession(
       CassandraResourceRule cassandraResourceRule,
       CqlIdentifier keyspace,
-      ProgrammaticDriverConfigLoader.Builder loader) {
+      DriverConfigLoaderBuilder loader) {
     return newSession(cassandraResourceRule, keyspace, null, null, null, loader);
   }
 
@@ -169,26 +177,10 @@ public class SessionUtils {
       NodeStateListener nodeStateListener,
       SchemaChangeListener schemaChangeListener,
       Predicate<Node> nodeFilter,
-      ProgrammaticDriverConfigLoader.Builder loader) {
+      DriverConfigLoaderBuilder loader) {
     SessionBuilder builder =
         builder(cassandraResource, keyspace, nodeStateListener, schemaChangeListener, nodeFilter);
-
-    // Build config from builder - normally build() would be sufficient, but since the config
-    // path may vary, we iterate over builder values and create loader ourselves.
-    Config config = ConfigFactory.empty();
-    for (Map.Entry<String, Object> entry : loader.entrySet()) {
-      config = config.withValue(entry.getKey(), ConfigValueFactory.fromAnyRef(entry.getValue()));
-    }
-
-    final Config fConfig = config;
-    Supplier<Config> configSupplier =
-        () -> {
-          ConfigFactory.invalidateCaches();
-          return fConfig.withFallback(ConfigFactory.load().getConfig(SessionUtils.getConfigPath()));
-        };
-
-    return (SessionT)
-        builder.withConfigLoader(new DefaultDriverConfigLoader(configSupplier)).build();
+    return (SessionT) builder.withConfigLoader(loader.build()).build();
   }
 
   /**
