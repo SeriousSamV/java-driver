@@ -16,11 +16,13 @@
 package com.datastax.oss.driver.api.core.config;
 
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
-import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableMap;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableSortedSet;
+import com.datastax.oss.protocol.internal.util.collection.NullAllowingImmutableMap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.Map;
@@ -57,7 +59,8 @@ public final class ProgrammaticDriverConfigLoader {
 
   public static final class Builder implements ProgrammaticBuilder<Builder> {
 
-    private ImmutableMap.Builder<String, Object> values = ImmutableMap.builder();
+    private NullAllowingImmutableMap.Builder<String, Object> values =
+        NullAllowingImmutableMap.builder();
 
     private Builder() {}
 
@@ -92,31 +95,33 @@ public final class ProgrammaticDriverConfigLoader {
       return builder.build();
     }
 
+    @NonNull
     @Override
-    public Builder with(String path, Object value) {
+    public Builder with(@NonNull String path, @Nullable Object value) {
       values.put(path, value);
       return this;
     }
 
     /** Adds configuration for a profile constructed using {@link #profileBuilder()} by name. */
     public Builder withProfile(String profileName, Profile profile) {
-      Builder builder = this;
       String prefix = "profiles." + profileName + ".";
       for (Map.Entry<String, Object> entry : profile.values.entrySet()) {
-        builder = builder.with(prefix + entry.getKey(), entry.getValue());
+        this.with(prefix + entry.getKey(), entry.getValue());
       }
-      return builder;
+      return this;
     }
   }
 
   public static final class ProfileBuilder implements ProgrammaticBuilder<ProfileBuilder> {
 
-    final ImmutableMap.Builder<String, Object> values = ImmutableMap.builder();
+    final NullAllowingImmutableMap.Builder<String, Object> values =
+        NullAllowingImmutableMap.builder();
 
     private ProfileBuilder() {}
 
+    @NonNull
     @Override
-    public ProfileBuilder with(String path, Object value) {
+    public ProfileBuilder with(@NonNull String path, @Nullable Object value) {
       values.put(path, value);
       return this;
     }
@@ -128,9 +133,9 @@ public final class ProgrammaticDriverConfigLoader {
 
   static final class Profile {
 
-    final ImmutableMap<String, Object> values;
+    final Map<String, Object> values;
 
-    private Profile(ImmutableMap<String, Object> values) {
+    private Profile(Map<String, Object> values) {
       this.values = values;
     }
   }

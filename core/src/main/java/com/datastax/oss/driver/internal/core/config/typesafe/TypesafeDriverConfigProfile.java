@@ -26,6 +26,7 @@ import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
 import com.typesafe.config.ConfigValueType;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -178,7 +179,7 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
-  public DriverConfigProfile with(@NonNull String path, @NonNull Object value) {
+  public DriverConfigProfile with(@NonNull String path, @Nullable Object value) {
     Base base = getBaseProfile();
     // Add the new option to any already derived options
     Config newAdded = getAddedOptions().withValue(path, ConfigValueFactory.fromAnyRef(value));

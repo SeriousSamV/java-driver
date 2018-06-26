@@ -16,6 +16,7 @@
 package com.datastax.oss.driver.api.core.config;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,7 @@ public interface ProgrammaticBuilder<SelfT extends ProgrammaticBuilder> {
   }
 
   @NonNull
-  default SelfT with(@NonNull DriverOption option, @NonNull Object value) {
+  default SelfT with(@NonNull DriverOption option, @Nullable Object value) {
     return with(option.getPath(), value);
   }
 
@@ -134,5 +135,5 @@ public interface ProgrammaticBuilder<SelfT extends ProgrammaticBuilder> {
    * not recommended that it is used directly other than by these defaults.
    */
   @NonNull
-  SelfT with(@NonNull String path, @NonNull Object value);
+  SelfT with(@NonNull String path, @Nullable Object value);
 }
