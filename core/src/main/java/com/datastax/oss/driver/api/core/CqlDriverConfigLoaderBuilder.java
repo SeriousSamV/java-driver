@@ -21,6 +21,7 @@ import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfig
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Map;
 import net.jcip.annotations.NotThreadSafe;
 
@@ -37,6 +38,7 @@ public class CqlDriverConfigLoaderBuilder
     extends DriverConfigLoaderBuilder<CqlDriverConfigLoaderBuilder> {
 
   @Override
+  @NonNull
   public DriverConfigLoader build() {
     // build config from map
     Config config = ConfigFactory.empty();

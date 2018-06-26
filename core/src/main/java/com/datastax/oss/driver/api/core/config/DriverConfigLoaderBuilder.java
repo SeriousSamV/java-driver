@@ -42,6 +42,7 @@ public abstract class DriverConfigLoaderBuilder<SelfT extends DriverConfigLoader
    * @return a new {@link ProfileBuilder} to provide programmatic configuration at a profile level.
    * @see #withProfile(String, Profile)
    */
+  @NonNull
   public static ProfileBuilder profileBuilder() {
     return new ProfileBuilder();
   }
@@ -53,13 +54,11 @@ public abstract class DriverConfigLoaderBuilder<SelfT extends DriverConfigLoader
    * @return constructed {@link DriverConfigLoader} using the configuration passed into this
    *     builder.
    */
+  @NonNull
   public abstract DriverConfigLoader build();
 
-  /**
-   * @return All configured entries as a map. This is useful for cases where you want to build an
-   *     alternate {@link DriverConfigLoader} taking into the account the configuration provided to
-   *     this builder.
-   */
+  /** @return All configured entries as a map. */
+  @NonNull
   public SortedSet<Map.Entry<String, Object>> entrySet() {
     ImmutableSortedSet.Builder<Map.Entry<String, Object>> builder =
         ImmutableSortedSet.orderedBy(Comparator.comparing(Map.Entry::getKey));
@@ -77,6 +76,7 @@ public abstract class DriverConfigLoaderBuilder<SelfT extends DriverConfigLoader
   }
 
   /** Adds configuration for a profile constructed using {@link #profileBuilder()} by name. */
+  @NonNull
   public SelfT withProfile(String profileName, Profile profile) {
     String prefix = "profiles." + profileName + ".";
     for (Map.Entry<String, Object> entry : profile.values.entrySet()) {
@@ -99,6 +99,7 @@ public abstract class DriverConfigLoaderBuilder<SelfT extends DriverConfigLoader
       return this;
     }
 
+    @NonNull
     public Profile build() {
       return new Profile(values.build());
     }
