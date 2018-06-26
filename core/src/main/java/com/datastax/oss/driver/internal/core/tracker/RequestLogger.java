@@ -15,6 +15,10 @@
  */
 package com.datastax.oss.driver.internal.core.tracker;
 
+import static com.datastax.oss.driver.api.core.config.DefaultDriverOptionUtil.getConfigBooleanIfDefined;
+import static com.datastax.oss.driver.api.core.config.DefaultDriverOptionUtil.getConfigDurationIfDefined;
+import static com.datastax.oss.driver.api.core.config.DefaultDriverOptionUtil.getConfigIntIfDefined;
+
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigProfile;
 import com.datastax.oss.driver.api.core.context.DriverContext;
@@ -190,22 +194,5 @@ public class RequestLogger implements RequestTracker {
     } else {
       LOG.error("{} [{}]", builder.toString(), error.toString());
     }
-  }
-
-  private boolean getConfigBooleanIfDefined(
-      DriverConfigProfile configProfile, DefaultDriverOption option, boolean defaultValue) {
-    return configProfile.isDefined(option) ? configProfile.getBoolean(option) : defaultValue;
-  }
-
-  private long getConfigDurationIfDefined(
-      DriverConfigProfile configProfile, DefaultDriverOption option, long defaultValue) {
-    return configProfile.isDefined(option)
-        ? configProfile.getDuration(option).toNanos()
-        : defaultValue;
-  }
-
-  private int getConfigIntIfDefined(
-      DriverConfigProfile configProfile, DefaultDriverOption option, int defaultValue) {
-    return configProfile.isDefined(option) ? configProfile.getInt(option) : defaultValue;
   }
 }
