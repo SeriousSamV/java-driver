@@ -4,7 +4,7 @@
 
 ### 4.0.0-beta1 (in progress)
 
-- [new feature] JAVA-1869: Add ProgrammaticDriverConfigLoader
+- [new feature] JAVA-1869: Add DriverConfigLoaderBuilder
 - [improvement] JAVA-1763: Generate a binary tarball as part of the build process
 - [improvement] JAVA-1884: Add additional methods from TypeToken to GenericType
 - [improvement] JAVA-1883: Use custom queue implementation for LBP's query plan
