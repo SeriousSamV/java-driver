@@ -53,6 +53,7 @@
 - [new feature] JAVA-1537: Add remaining socket options
 - [bug] JAVA-1756: Propagate custom payload when preparing a statement
 - [improvement] JAVA-1847: Add per-node request tracking
+- [improvement] JAVA-1870: Add Component level configuration validation to the RequestLogger
 
 ### 4.0.0-alpha3
 
