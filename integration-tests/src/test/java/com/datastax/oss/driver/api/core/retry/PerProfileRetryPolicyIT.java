@@ -22,7 +22,9 @@ import static com.datastax.oss.simulacron.common.stubbing.PrimeDsl.when;
 
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfig;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoaderBuilder;
 import com.datastax.oss.driver.api.core.config.DriverConfigProfile;
 import com.datastax.oss.driver.api.core.context.DriverContext;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
@@ -32,7 +34,9 @@ import com.datastax.oss.driver.api.core.servererrors.CoordinatorException;
 import com.datastax.oss.driver.api.core.servererrors.UnavailableException;
 import com.datastax.oss.driver.api.core.servererrors.WriteType;
 import com.datastax.oss.driver.api.core.session.Request;
+import com.datastax.oss.driver.api.testinfra.loadbalancing.SortingLoadBalancingPolicy;
 import com.datastax.oss.driver.api.testinfra.session.SessionRule;
+import com.datastax.oss.driver.api.testinfra.session.SessionUtils;
 import com.datastax.oss.driver.api.testinfra.simulacron.SimulacronRule;
 import com.datastax.oss.driver.categories.ParallelizableTests;
 import com.datastax.oss.driver.internal.core.retry.DefaultRetryPolicy;
@@ -55,11 +59,23 @@ public class PerProfileRetryPolicyIT {
 
   public static @ClassRule SessionRule<CqlSession> sessionRule =
       SessionRule.builder(simulacron)
-          .withOptions(
-              "basic.load-balancing-policy.class = com.datastax.oss.driver.api.testinfra.loadbalancing.SortingLoadBalancingPolicy",
-              "advanced.retry-policy.class = DefaultRetryPolicy",
-              "profiles.profile1.advanced.retry-policy.class = \"com.datastax.oss.driver.api.core.retry.PerProfileRetryPolicyIT$NoRetryPolicy\"",
-              "profiles.profile2 {}")
+          .withConfigLoader(
+              SessionUtils.configLoaderBuilder()
+                  .withClass(
+                      DefaultDriverOption.LOAD_BALANCING_POLICY_CLASS,
+                      SortingLoadBalancingPolicy.class)
+                  .withClass(DefaultDriverOption.RETRY_POLICY_CLASS, DefaultRetryPolicy.class)
+                  .withProfile(
+                      "profile1",
+                      DriverConfigLoaderBuilder.profileBuilder()
+                          .withClass(DefaultDriverOption.RETRY_POLICY_CLASS, NoRetryPolicy.class)
+                          .build())
+                  .withProfile(
+                      "profile2",
+                      DriverConfigLoaderBuilder.profileBuilder()
+                          .withInt(DefaultDriverOption.REQUEST_PAGE_SIZE, 100)
+                          .build())
+                  .build())
           .build();
 
   private static String QUERY_STRING = "select * from foo";

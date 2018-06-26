@@ -342,7 +342,8 @@ public class SpeculativeExecutionIT {
             .withInt(DefaultDriverOption.SPECULATIVE_EXECUTION_MAX, maxSpeculativeExecutions)
             .withDuration(
                 DefaultDriverOption.SPECULATIVE_EXECUTION_DELAY,
-                Duration.ofMillis(speculativeDelayMs)));
+                Duration.ofMillis(speculativeDelayMs))
+            .build());
   }
 
   private CqlSession buildSessionWithProfile(
@@ -414,7 +415,7 @@ public class SpeculativeExecutionIT {
                 .withString(DefaultDriverOption.REQUEST_CONSISTENCY, "ONE")
                 .build());
 
-    CqlSession session = SessionUtils.newSession(simulacron, builder);
+    CqlSession session = SessionUtils.newSession(simulacron, builder.build());
 
     // validate profile data
     DriverContext context = session.getContext();

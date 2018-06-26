@@ -33,7 +33,7 @@ public class NodeMetadataIT {
 
   @ClassRule public static CcmRule ccmRule = CcmRule.getInstance();
 
-  @Rule public SessionRule<CqlSession> sessionRule = new SessionRule<>(ccmRule);
+  @Rule public SessionRule<CqlSession> sessionRule = SessionRule.builder(ccmRule).build();
 
   @Test
   public void should_expose_node_metadata() {

@@ -19,9 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.servererrors.InvalidQueryException;
 import com.datastax.oss.driver.api.testinfra.ccm.CcmRule;
 import com.datastax.oss.driver.api.testinfra.session.SessionRule;
+import com.datastax.oss.driver.api.testinfra.session.SessionUtils;
 import com.datastax.oss.driver.categories.ParallelizableTests;
 import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
@@ -39,7 +41,12 @@ public class SimpleStatementIT {
 
   @ClassRule
   public static SessionRule<CqlSession> cluster =
-      new SessionRule<>(ccm, "basic.request.page-size = 20");
+      SessionRule.builder(ccm)
+          .withConfigLoader(
+              SessionUtils.configLoaderBuilder()
+                  .withInt(DefaultDriverOption.REQUEST_PAGE_SIZE, 20)
+                  .build())
+          .build();
 
   @Rule public TestName name = new TestName();
 
