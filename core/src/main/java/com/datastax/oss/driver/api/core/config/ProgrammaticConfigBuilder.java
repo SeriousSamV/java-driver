@@ -25,9 +25,9 @@ import java.util.Map;
  * A builder that allows providing typed configuration tied to {@link DriverOption}.
  *
  * <p>Rarely would one ever deal with this type directly. This interface is useful for defining
- * default methods so implementors only have to implement a small set of methods.
+ * default methods so implementors only have to implement {@link #with(String, Object)}.
  */
-public interface ProgrammaticBuilder<SelfT extends ProgrammaticBuilder> {
+public interface ProgrammaticConfigBuilder<SelfT extends ProgrammaticConfigBuilder> {
 
   @NonNull
   default SelfT withBoolean(@NonNull DriverOption option, boolean value) {

@@ -36,7 +36,7 @@ import java.util.SortedSet;
  *
  * @see DriverConfig
  */
-public interface DriverConfigProfile extends ProgrammaticBuilder<DriverConfigProfile> {
+public interface DriverConfigProfile extends ProgrammaticConfigBuilder<DriverConfigProfile> {
 
   /**
    * The name of the default profile (the string {@value}).

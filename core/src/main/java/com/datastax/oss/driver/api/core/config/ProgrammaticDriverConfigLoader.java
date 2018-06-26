@@ -57,7 +57,7 @@ public final class ProgrammaticDriverConfigLoader {
     return new ProfileBuilder();
   }
 
-  public static final class Builder implements ProgrammaticBuilder<Builder> {
+  public static final class Builder implements ProgrammaticConfigBuilder<Builder> {
 
     private NullAllowingImmutableMap.Builder<String, Object> values =
         NullAllowingImmutableMap.builder();
@@ -112,7 +112,7 @@ public final class ProgrammaticDriverConfigLoader {
     }
   }
 
-  public static final class ProfileBuilder implements ProgrammaticBuilder<ProfileBuilder> {
+  public static final class ProfileBuilder implements ProgrammaticConfigBuilder<ProfileBuilder> {
 
     final NullAllowingImmutableMap.Builder<String, Object> values =
         NullAllowingImmutableMap.builder();
@@ -131,7 +131,7 @@ public final class ProgrammaticDriverConfigLoader {
     }
   }
 
-  static final class Profile {
+  public static final class Profile {
 
     final Map<String, Object> values;
 
