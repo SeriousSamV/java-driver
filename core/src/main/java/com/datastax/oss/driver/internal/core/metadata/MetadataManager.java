@@ -419,7 +419,7 @@ public class MetadataManager implements AsyncAutoCloseable {
 
     private Void parseAndApplySchemaRows(SchemaRows schemaRows) {
       assert adminExecutor.inEventLoop();
-      assert schemaRows.refreshFuture == currentSchemaRefresh;
+      assert schemaRows.refreshFuture() == currentSchemaRefresh;
       try {
         SchemaRefresh schemaRefresh = schemaParserFactory.newInstance(schemaRows).parse();
         long start = System.nanoTime();
