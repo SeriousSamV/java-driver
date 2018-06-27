@@ -58,6 +58,8 @@ public interface DriverConfigProfile {
 
   boolean getBoolean(@NonNull DriverOption option);
 
+  boolean getBoolean(@NonNull DriverOption option, boolean defaultValue);
+
   @NonNull
   DriverConfigProfile withBoolean(@NonNull DriverOption option, boolean value);
 
@@ -65,9 +67,14 @@ public interface DriverConfigProfile {
   List<Boolean> getBooleanList(@NonNull DriverOption option);
 
   @NonNull
+  List<Boolean> getBooleanList(@NonNull DriverOption option, @NonNull List<Boolean> defaultValue);
+
+  @NonNull
   DriverConfigProfile withBooleanList(@NonNull DriverOption option, @NonNull List<Boolean> value);
 
   int getInt(@NonNull DriverOption option);
+
+  int getInt(@NonNull DriverOption option, int defaultValue);
 
   @NonNull
   DriverConfigProfile withInt(@NonNull DriverOption option, int value);
@@ -76,20 +83,29 @@ public interface DriverConfigProfile {
   List<Integer> getIntList(@NonNull DriverOption option);
 
   @NonNull
+  List<Integer> getIntList(@NonNull DriverOption option, @NonNull List<Integer> defaultValue);
+
+  @NonNull
   DriverConfigProfile withIntList(@NonNull DriverOption option, @NonNull List<Integer> value);
 
   long getLong(@NonNull DriverOption option);
 
-  @NonNull
+  long getLong(@NonNull DriverOption option, long defaultValue);
+
   DriverConfigProfile withLong(@NonNull DriverOption option, long value);
 
   @NonNull
   List<Long> getLongList(@NonNull DriverOption option);
 
   @NonNull
+  List<Long> getLongList(@NonNull DriverOption option, @NonNull List<Long> defaultValue);
+
+  @NonNull
   DriverConfigProfile withLongList(@NonNull DriverOption option, @NonNull List<Long> value);
 
   double getDouble(@NonNull DriverOption option);
+
+  double getDouble(@NonNull DriverOption option, double defaultValue);
 
   @NonNull
   DriverConfigProfile withDouble(@NonNull DriverOption option, double value);
@@ -98,10 +114,16 @@ public interface DriverConfigProfile {
   List<Double> getDoubleList(@NonNull DriverOption option);
 
   @NonNull
+  List<Double> getDoubleList(@NonNull DriverOption option, @NonNull List<Double> defaultValue);
+
+  @NonNull
   DriverConfigProfile withDoubleList(@NonNull DriverOption option, @NonNull List<Double> value);
 
   @NonNull
   String getString(@NonNull DriverOption option);
+
+  @NonNull
+  String getString(@NonNull DriverOption option, @NonNull String defaultValue);
 
   @NonNull
   DriverConfigProfile withString(@NonNull DriverOption option, @NonNull String value);
@@ -110,10 +132,17 @@ public interface DriverConfigProfile {
   List<String> getStringList(@NonNull DriverOption option);
 
   @NonNull
+  List<String> getStringList(@NonNull DriverOption option, @NonNull List<String> defaultValue);
+
+  @NonNull
   DriverConfigProfile withStringList(@NonNull DriverOption option, @NonNull List<String> value);
 
   @NonNull
   Map<String, String> getStringMap(@NonNull DriverOption option);
+
+  @NonNull
+  Map<String, String> getStringMap(
+      @NonNull DriverOption option, @NonNull Map<String, String> defaultValue);
 
   @NonNull
   DriverConfigProfile withStringMap(
@@ -126,6 +155,8 @@ public interface DriverConfigProfile {
    */
   long getBytes(@NonNull DriverOption option);
 
+  long getBytes(@NonNull DriverOption option, long defaultValue);
+
   /** @see #getBytes(DriverOption) */
   @NonNull
   DriverConfigProfile withBytes(@NonNull DriverOption option, long value);
@@ -133,6 +164,9 @@ public interface DriverConfigProfile {
   /** @see #getBytes(DriverOption) */
   @NonNull
   List<Long> getBytesList(DriverOption option);
+
+  @NonNull
+  List<Long> getBytesList(DriverOption option, @NonNull List<Long> defaultValue);
 
   /** @see #getBytes(DriverOption) */
   @NonNull
@@ -142,10 +176,17 @@ public interface DriverConfigProfile {
   Duration getDuration(@NonNull DriverOption option);
 
   @NonNull
+  Duration getDuration(@NonNull DriverOption option, @NonNull Duration defaultValue);
+
+  @NonNull
   DriverConfigProfile withDuration(@NonNull DriverOption option, @NonNull Duration value);
 
   @NonNull
   List<Duration> getDurationList(@NonNull DriverOption option);
+
+  @NonNull
+  List<Duration> getDurationList(
+      @NonNull DriverOption option, @NonNull List<Duration> defaultValue);
 
   @NonNull
   DriverConfigProfile withDurationList(@NonNull DriverOption option, @NonNull List<Duration> value);

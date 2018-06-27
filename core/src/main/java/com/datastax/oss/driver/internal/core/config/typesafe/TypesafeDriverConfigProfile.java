@@ -64,6 +64,11 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
     return getCached(option.getPath(), getEffectiveOptions()::getBoolean);
   }
 
+  @Override
+  public boolean getBoolean(@NonNull DriverOption option, boolean defaultValue) {
+    return isDefined(option) ? getBoolean(option) : defaultValue;
+  }
+
   @NonNull
   @Override
   public DriverConfigProfile withBoolean(@NonNull DriverOption option, boolean value) {
@@ -78,6 +83,13 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
+  public List<Boolean> getBooleanList(
+      @NonNull DriverOption option, @NonNull List<Boolean> defaultValue) {
+    return isDefined(option) ? getBooleanList(option) : defaultValue;
+  }
+
+  @NonNull
+  @Override
   public DriverConfigProfile withBooleanList(
       @NonNull DriverOption option, @NonNull List<Boolean> value) {
     return with(option, value);
@@ -86,6 +98,11 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public int getInt(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getInt);
+  }
+
+  @Override
+  public int getInt(@NonNull DriverOption option, int defaultValue) {
+    return isDefined(option) ? getInt(option) : defaultValue;
   }
 
   @NonNull
@@ -102,6 +119,13 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
+  public List<Integer> getIntList(
+      @NonNull DriverOption option, @NonNull List<Integer> defaultValue) {
+    return isDefined(option) ? getIntList(option) : defaultValue;
+  }
+
+  @NonNull
+  @Override
   public DriverConfigProfile withIntList(
       @NonNull DriverOption option, @NonNull List<Integer> value) {
     return with(option, value);
@@ -110,6 +134,11 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public long getLong(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getLong);
+  }
+
+  @Override
+  public long getLong(@NonNull DriverOption option, long defaultValue) {
+    return isDefined(option) ? getLong(option) : defaultValue;
   }
 
   @NonNull
@@ -126,6 +155,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
+  public List<Long> getLongList(@NonNull DriverOption option, @NonNull List<Long> defaultValue) {
+    return isDefined(option) ? getLongList(option) : defaultValue;
+  }
+
+  @NonNull
+  @Override
   public DriverConfigProfile withLongList(@NonNull DriverOption option, @NonNull List<Long> value) {
     return with(option, value);
   }
@@ -133,6 +168,11 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public double getDouble(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getDouble);
+  }
+
+  @Override
+  public double getDouble(@NonNull DriverOption option, double defaultValue) {
+    return isDefined(option) ? getDouble(option) : defaultValue;
   }
 
   @NonNull
@@ -145,6 +185,13 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public List<Double> getDoubleList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getDoubleList);
+  }
+
+  @NonNull
+  @Override
+  public List<Double> getDoubleList(
+      @NonNull DriverOption option, @NonNull List<Double> defaultValue) {
+    return isDefined(option) ? getDoubleList(option) : defaultValue;
   }
 
   @NonNull
@@ -162,6 +209,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
+  public String getString(@NonNull DriverOption option, @NonNull String defaultValue) {
+    return isDefined(option) ? getString(option) : defaultValue;
+  }
+
+  @NonNull
+  @Override
   public DriverConfigProfile withString(@NonNull DriverOption option, @NonNull String value) {
     return with(option, value);
   }
@@ -170,6 +223,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public List<String> getStringList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getStringList);
+  }
+
+  @NonNull
+  @Override
+  public List<String> getStringList(DriverOption option, List<String> defaultValue) {
+    return isDefined(option) ? getStringList(option) : defaultValue;
   }
 
   @NonNull
@@ -194,6 +253,13 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
+  public Map<String, String> getStringMap(
+      @NonNull DriverOption option, @NonNull Map<String, String> defaultValue) {
+    return isDefined(option) ? getStringMap(option) : defaultValue;
+  }
+
+  @NonNull
+  @Override
   public DriverConfigProfile withStringMap(
       @NonNull DriverOption option, @NonNull Map<String, String> map) {
     Base base = getBaseProfile();
@@ -214,6 +280,11 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
     return getCached(option.getPath(), getEffectiveOptions()::getBytes);
   }
 
+  @Override
+  public long getBytes(@NonNull DriverOption option, long defaultValue) {
+    return isDefined(option) ? getBytes(option) : defaultValue;
+  }
+
   @NonNull
   @Override
   public DriverConfigProfile withBytes(@NonNull DriverOption option, long value) {
@@ -224,6 +295,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public List<Long> getBytesList(DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getBytesList);
+  }
+
+  @NonNull
+  @Override
+  public List<Long> getBytesList(@NonNull DriverOption option, @NonNull List<Long> defaultValue) {
+    return isDefined(option) ? getBytesList(option) : defaultValue;
   }
 
   @NonNull
@@ -241,6 +318,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
 
   @NonNull
   @Override
+  public Duration getDuration(@NonNull DriverOption option, @NonNull Duration defaultValue) {
+    return isDefined(option) ? getDuration(option) : defaultValue;
+  }
+
+  @NonNull
+  @Override
   public DriverConfigProfile withDuration(@NonNull DriverOption option, @NonNull Duration value) {
     return with(option, value);
   }
@@ -249,6 +332,12 @@ public abstract class TypesafeDriverConfigProfile implements DriverConfigProfile
   @Override
   public List<Duration> getDurationList(@NonNull DriverOption option) {
     return getCached(option.getPath(), getEffectiveOptions()::getDurationList);
+  }
+
+  @NonNull
+  @Override
+  public List<Duration> getDurationList(DriverOption option, List<Duration> defaultValue) {
+    return isDefined(option) ? getDurationList(option) : defaultValue;
   }
 
   @NonNull
